@@ -3,51 +3,78 @@ const hostname = '127.0.0.1';
 const app = express();
 const port = 3000;
 
+// Staattinen html-sivusto tarjoillaan palvelimen juuressa
+app.use('/', express.static('public'));
+
+// middleware, joka lukee json data POST-pyyntöjen rungosta (body)
 app.use(express.json());
 
-const data = [{id: 1, name: 'Alice'}];
-
-// Read data endpoint
-app.get('/api/data', (req, res) => {
-  res.status(200).json(data);
+// rest-apin resurssit tarjoillaan /api/-polun alla
+app.get('/api/', (req, res) => {
+  console.log('get-pyyntö juureen havaittu');
+  console.log(req.url);
+  res.send('Welcome to my REST API!');
 });
 
-// Send data to server
-app.post('/api/data', (req, res) => {
-  const newItem = req.body;
-  if (!newItem || !newItem.name) {
-    return res.status(400).json({error: 'Invalid data format'});
+// syötteen lukeminen reittiparametreista (route params)
+app.get('/api/sum/:num1/:num2', (req, res) => {
+  console.log(req.params);
+  const num1 = Number(req.params.num1);
+  const num2 = Number(req.params.num2);
+  // testataan, jos jompikumpi luvuista ei ole numero, niin lähetään
+  // virhetilakoodi ja viesti json-muodossa
+  if (isNaN(num1) || isNaN(num2)) {
+    res.status(400);
+    res.json({
+      error: 'Both parameters must be numbers!',
+    });
+    return;
   }
-  newItem.id = data.length + 1;
-  data.push(newItem);
-  res.status(201).json(newItem);
+  res.json({
+    num1,
+    num2,
+    sum: num1 + num2,
+  });
 });
 
-// Delete data endpoint
-app.delete('/api/data/:id', (req, res) => {
-  const id = parseInt(req.params.id, 10);
-  const index = data.findIndex((item) => item.id === id);
-  if (index === -1) {
-    return res.status(404).json({error: 'Item not found'});
+// syötteen lukeminen kyselyparametreista (query params)
+app.get('/api/sum/', (req, res) => {
+  console.log(req.query);
+  const num1 = parseInt(req.query.num1);
+  const num2 = parseInt(req.query.num2);
+  res.json({
+    num1,
+    num2,
+    sum: num1 + num2,
+  });
+});
+
+// POST-pynnön käsittely ja datan lukeminen pyynnön bodystä
+app.post('/api/moro', (req, res) => {
+  console.log(req.body);
+  res.status(200);
+  res.json({reply: 'no Moro ' + req.body.sender});
+});
+
+// TODO: lisää oma reitti ja toiminnallisuus omaa mielikuvitusta käyttäen, niin
+// ensimmäisen viikon harkka ok
+app.get('/api/random/:min/:max', (req, res) => {
+  const min = Number(req.params.min);
+  const max = Number(req.params.max);
+  if (isNaN(min) || isNaN(max)) {
+    res.status(400).json({
+      error: 'Both parameters must be numbers!',
+    });
+    return;
   }
 
-  res.status(204).send();
-});
+  const random = Math.floor(Math.random() * (max - min + 1) + min);
 
-// Modify data endpoint
-app.put('/api/data/:id', (req, res) => {
-  const id = parseInt(req.params.id, 10);
-  const item = data.find((item) => item.id === id);
-  if (!item) {
-    return res.status(404).json({error: 'Item not found'});
-  }
-
-  res.status(200).json({message: 'Modification successful', item});
-});
-
-// Handle non-existing routes
-app.use((req, res) => {
-  res.status(404).json({error: 'Resource not found'});
+  res.json({
+    min,
+    max,
+    random,
+  });
 });
 
 app.listen(port, hostname, () => {
