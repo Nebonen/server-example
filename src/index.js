@@ -30,6 +30,8 @@ app.post('/api/items', addItem);
 app.put('/api/items/:id', updateItem);
 app.delete('/api/items/:id', deleteItem);
 
+//users resurssin päätepisteet (endpoint)
+
 // syötteen lukeminen reittiparametreista (route params)
 app.get('/api/sum/:num1/:num2', (req, res) => {
   console.log(req.params);
