@@ -64,4 +64,15 @@ const updateItem = (req, res) => {
   });
 };
 
-export {getItems, getItemById, addItem, updateItem};
+const deleteItem = (req, res) => {
+  const id = req.params.id;
+  const item = items.findIndex((item) => item.id == id);
+  if (item === -1) {
+    res.status(404);
+    return res.json({message: 'Item not found'});
+  }
+  items.splice(item, 1);
+  res.status(200).json({message: 'Item deleted', id: id});
+};
+
+export {getItems, getItemById, addItem, updateItem, deleteItem};
