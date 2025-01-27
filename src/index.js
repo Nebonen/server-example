@@ -6,6 +6,7 @@ import {
   updateItem,
   deleteItem,
 } from './items.js';
+import {getUser, createUser, loginUser} from './users.js';
 const hostname = '127.0.0.1';
 const app = express();
 const port = 3000;
@@ -31,6 +32,9 @@ app.put('/api/items/:id', updateItem);
 app.delete('/api/items/:id', deleteItem);
 
 //users resurssin päätepisteet (endpoint)
+app.get('/api/users/:id', getUser);
+app.post('/api/users', createUser);
+app.post('/api/login', loginUser);
 
 // syötteen lukeminen reittiparametreista (route params)
 app.get('/api/sum/:num1/:num2', (req, res) => {
