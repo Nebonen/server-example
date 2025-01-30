@@ -7,9 +7,12 @@ import {
   deleteItem,
 } from './items.js';
 import {getUser, createUser, loginUser} from './users.js';
+import cors from 'cors';
 const hostname = '127.0.0.1';
 const app = express();
 const port = 3000;
+
+app.use(cors());
 
 // Staattinen html-sivusto tarjoillaan palvelimen juuressa
 app.use('/', express.static('public'));
