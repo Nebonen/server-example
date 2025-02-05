@@ -6,8 +6,8 @@ import {
   updateItem,
   deleteItem,
 } from './items.js';
-import {getUser, createUser, loginUser} from './users.js';
 import cors from 'cors';
+import userRouter from './routes/userRouter.js';
 const hostname = '127.0.0.1';
 const app = express();
 const port = 3000;
@@ -27,78 +27,15 @@ app.get('/api/', (req, res) => {
   res.send('Welcome to my REST API!');
 });
 
-// Items resurssin päätepisteet (endpoint)
+//users resurssin päätepisteet (endpoint)
+app.use('/api/users', userRouter);
+
+// Items (testi mock data) resurssin päätepisteet (endpoint)
 app.get('/api/items', getItems);
 app.get('/api/items/:id', getItemById);
 app.post('/api/items', addItem);
 app.put('/api/items/:id', updateItem);
 app.delete('/api/items/:id', deleteItem);
-
-//users resurssin päätepisteet (endpoint)
-app.get('/api/users/:id', getUser);
-app.post('/api/users', createUser);
-app.post('/api/login', loginUser);
-
-// syötteen lukeminen reittiparametreista (route params)
-app.get('/api/sum/:num1/:num2', (req, res) => {
-  console.log(req.params);
-  const num1 = Number(req.params.num1);
-  const num2 = Number(req.params.num2);
-  // testataan, jos jompikumpi luvuista ei ole numero, niin lähetään
-  // virhetilakoodi ja viesti json-muodossa
-  if (isNaN(num1) || isNaN(num2)) {
-    res.status(400);
-    res.json({
-      error: 'Both parameters must be numbers!',
-    });
-    return;
-  }
-  res.json({
-    num1,
-    num2,
-    sum: num1 + num2,
-  });
-});
-
-// syötteen lukeminen kyselyparametreista (query params)
-app.get('/api/sum/', (req, res) => {
-  console.log(req.query);
-  const num1 = parseInt(req.query.num1);
-  const num2 = parseInt(req.query.num2);
-  res.json({
-    num1,
-    num2,
-    sum: num1 + num2,
-  });
-});
-
-// POST-pynnön käsittely ja datan lukeminen pyynnön bodystä
-app.post('/api/moro', (req, res) => {
-  console.log(req.body);
-  res.status(200);
-  res.json({reply: 'no Moro ' + req.body.sender});
-});
-
-// TODO: lisää oma reitti ja toiminnallisuus omaa mielikuvitusta käyttäen, niin
-// ensimmäisen viikon harkka ok
-app.get('/api/random/:min/:max', (req, res) => {
-  const min = Number(req.params.min);
-  const max = Number(req.params.max);
-  if (isNaN(min) || isNaN(max)) {
-    res.status(400).json({
-      error: 'Both parameters must be numbers!',
-    });
-    return;
-  }
-
-  const random = Math.floor(Math.random() * (max - min + 1) + min);
-
-  res.json({
-    min,
-    max,
-    random,
-  });
-});
 
 app.listen(port, hostname, () => {
   console.log(`Server running at http://${hostname}:${port}/`);
