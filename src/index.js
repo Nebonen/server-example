@@ -6,7 +6,7 @@ import {
   updateItem,
   deleteItem,
 } from './items.js';
-import {getUser, createUser, loginUser} from './users.js';
+import {getUsers, getUser, createUser, loginUser} from './users.js';
 import cors from 'cors';
 const hostname = '127.0.0.1';
 const app = express();
@@ -35,6 +35,7 @@ app.put('/api/items/:id', updateItem);
 app.delete('/api/items/:id', deleteItem);
 
 //users resurssin päätepisteet (endpoint)
+app.get('/api/users', getUsers);
 app.get('/api/users/:id', getUser);
 app.post('/api/users', createUser);
 app.post('/api/login', loginUser);

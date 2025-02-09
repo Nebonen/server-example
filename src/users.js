@@ -19,6 +19,10 @@ const users = [
   },
 ];
 
+const getUsers = (req, res) => {
+  res.json(users);
+};
+
 const getUser = (req, res) => {
   console.log('getUser', req.params.id);
   const user = users.find((user) => user.id == req.params.id);
@@ -64,4 +68,4 @@ const loginUser = (req, res) => {
   return res.json({message: 'Login failed'});
 };
 
-export {getUser, createUser, loginUser};
+export {getUsers, getUser, createUser, loginUser};
