@@ -1,4 +1,6 @@
 import express from 'express';
+import cors from 'cors';
+
 import {
   addItem,
   getItemById,
@@ -6,8 +8,9 @@ import {
   updateItem,
   deleteItem,
 } from './items.js';
-import cors from 'cors';
+
 import userRouter from './routes/userRouter.js';
+import entryRouter from './routes/entryRouter.js';
 const hostname = '127.0.0.1';
 const app = express();
 const port = 3000;
@@ -29,6 +32,9 @@ app.get('/api/', (req, res) => {
 
 //users resurssin päätepisteet (endpoint)
 app.use('/api/users', userRouter);
+
+//entries resurssin päätepisteet (endpoint)
+app.use('/api/entries', entryRouter);
 
 // Items (testi mock data) resurssin päätepisteet (endpoint)
 app.get('/api/items', getItems);
