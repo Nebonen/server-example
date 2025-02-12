@@ -18,11 +18,14 @@ const getUsers = async (req, res) => {
 
 // Get user by ID
 const getUserById = async (req, res) => {
+  console.log('getUserById', req.params.id);
+
   try {
     const user = await getUserByIdDB(req.params.id);
+    console.log('User found:', user);
+    // jos user löytyi, eli arvo ei ole undefined, lähetetään se vastauksena
     if (user) {
-      const {id, username, email} = user;
-      res.json({id, username, email});
+      res.json(user);
     } else {
       res.status(404).json({message: 'User not found'});
     }
@@ -43,7 +46,7 @@ const addUser = async (req, res) => {
 
     const newUser = await addUserDB({
       username,
-      password, // In real app: await bcrypt.hash(password, 10)
+      password,
       email,
     });
 
@@ -68,7 +71,7 @@ const editUser = async (req, res) => {
 
     const updated = await updateUserDB(req.params.id, {
       username,
-      password, // In real app: await bcrypt.hash(password, 10)
+      password,
       email,
     });
 
