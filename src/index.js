@@ -1,6 +1,5 @@
 import express from 'express';
 import cors from 'cors';
-
 import {
   addItem,
   getItemById,
@@ -8,9 +7,9 @@ import {
   updateItem,
   deleteItem,
 } from './items.js';
-
 import userRouter from './routes/userRouter.js';
 import entryRouter from './routes/entryRouter.js';
+import authRouter from './routes/authRouter.js';
 const hostname = '127.0.0.1';
 const app = express();
 const port = 3000;
@@ -30,10 +29,11 @@ app.get('/api/', (req, res) => {
   res.send('Welcome to my REST API!');
 });
 
-//users resurssin päätepisteet (endpoint)
+// users resurssin päätepisteet (endpoint)
 app.use('/api/users', userRouter);
-
-//entries resurssin päätepisteet (endpoint)
+// käyttäjän autentikointiin liittyvät päätepisteet (endpoint)
+app.use('/api/auth', authRouter);
+// entry resurssin päätepisteet (endpoint)
 app.use('/api/entries', entryRouter);
 
 // Items (testi mock data) resurssin päätepisteet (endpoint)

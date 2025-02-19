@@ -1,19 +1,11 @@
 import {
-  listAllEntries,
+  //listAllEntries,
   findEntryById,
   updateEntry,
   deleteEntryById,
+  insertEntry,
+  selectEntriesByUserId,
 } from '../models/entryModel.js';
-
-const getEntries = async (req, res) => {
-  const result = await listAllEntries();
-  if (!result.error) {
-    res.json(result);
-  } else {
-    res.status(500);
-    res.json(result);
-  }
-};
 
 const getEntryById = async (req, res) => {
   const entry = await findEntryById(req.params.id);
@@ -42,4 +34,23 @@ const deleteEntry = async (req, res) => {
   }
 };
 
-export {getEntries, getEntryById, putEntry, deleteEntry};
+const postEntry = async (req, res) => {
+  // user_id, entry_date, mood, weight, sleep_hours, notes
+  // TODO: add try-catch
+  const newEntry = req.body;
+  newEntry.user_id = req.user.user_id;
+  insertEntry(newEntry);
+  res.status(201).json({message: 'Entry added.'});
+};
+
+/**
+ * Get all entries of the logged in user
+ * @param {*} req
+ * @param {*} res
+ */
+const getEntries = async (req, res) => {
+  const entries = await selectEntriesByUserId(req.user.user_id);
+  res.json(entries);
+};
+
+export {getEntryById, putEntry, deleteEntry, postEntry, getEntries};

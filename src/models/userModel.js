@@ -6,22 +6,32 @@ const getAllUsers = async () => {
   return rows;
 };
 
-const getUserByIdDB = async (id) => {
-  const [rows] = await promisePool.query(
-    'SELECT * FROM Users WHERE user_id = ?',
-    [id],
-  );
-  console.log(rows);
-  return rows[0];
+const getUserByIdDB = async (userId) => {
+  try {
+    const [rows] = await promisePool.query(
+      'SELECT user_id, username, email, created_at, user_level FROM Users WHERE user_id = ?',
+      [userId],
+    );
+    console.log(rows);
+    return rows[0];
+  } catch (error) {
+    console.error(error);
+    throw new Error('database error');
+  }
 };
 
 const addUserDB = async (user) => {
-  const [result] = await promisePool.query(
-    'INSERT INTO Users (username, password, email) VALUES (?, ?, ?)',
-    [user.username, user.password, user.email],
-  );
-  console.log(result);
-  return result.insertId;
+  try {
+    const [result] = await promisePool.query(
+      'INSERT INTO Users (username, password, email) VALUES (?, ?, ?)',
+      [user.username, user.password, user.email],
+    );
+    console.log('insert user', result);
+    return result.insertId;
+  } catch (error) {
+    console.error(error);
+    throw new Error('database error');
+  }
 };
 
 const updateUserDB = async (id, user) => {
@@ -40,4 +50,40 @@ const deleteUserDB = async (id) => {
   return result.affectedRows > 0;
 };
 
-export {getAllUsers, getUserByIdDB, addUserDB, updateUserDB, deleteUserDB};
+const selectUserByNameAndPassword = async (username, password) => {
+  try {
+    const [rows] = await promisePool.query(
+      'SELECT user_id, username, email, created_at, user_level FROM Users WHERE username=? AND password=?',
+      [username, password],
+    );
+    console.log(rows);
+    return rows[0];
+  } catch (error) {
+    console.error(error);
+    throw new Error('database error');
+  }
+};
+
+const selectUserByUsername = async (username) => {
+  try {
+    const [rows] = await promisePool.query(
+      'SELECT user_id, username, password, email, created_at, user_level FROM Users WHERE username=?',
+      [username],
+    );
+    console.log(rows);
+    return rows[0];
+  } catch (error) {
+    console.error(error);
+    throw new Error('database error');
+  }
+};
+
+export {
+  getAllUsers,
+  getUserByIdDB,
+  addUserDB,
+  updateUserDB,
+  deleteUserDB,
+  selectUserByNameAndPassword,
+  selectUserByUsername,
+};

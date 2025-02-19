@@ -1,3 +1,4 @@
+import bcrypt from 'bcryptjs';
 import {
   getAllUsers,
   getUserByIdDB,
@@ -34,29 +35,36 @@ const getUserById = async (req, res) => {
   }
 };
 
-// Add new user / registration
+// käyttäjän lisäys (rekisteröinti)
+// lisätään parempi virheenkäsittely myöhemmin
 const addUser = async (req, res) => {
-  try {
-    const {username, password, email} = req.body;
-    if (!username || !password || !email) {
-      return res.status(400).json({
-        message: 'Request should have username, password and email properties.',
-      });
-    }
-
-    const newUser = await addUserDB({
+  console.log('addUser request body', req.body);
+  // esitellään 3 uutta muuttujaa, johon sijoitetaan req.body:n vastaavien propertyjen arvot
+  const {username, password, email} = req.body;
+  // tarkistetaan, että pyynnössä on kaikki tarvittavat tiedot
+  if (username && password && email) {
+    // luodaan selväkielisestä sanasta tiiviste, joka tallennetaan kantaan
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+    // luodaan uusi käyttäjä olio ja lisätään se tietokantaa käyttäen modelia
+    const newUser = {
       username,
-      password,
+      password: hashedPassword,
       email,
-    });
-
-    res.status(201).json({
-      message: 'User added.',
-      userId: newUser.id,
-    });
-  } catch (error) {
-    res.status(500).json({message: error.message});
+    };
+    try {
+      const result = await addUserDB(newUser);
+      res.status(201);
+      return res.json({message: 'User added. id: ' + result});
+    } catch (error) {
+      console.error(error.message);
+      return res.status(400).json({message: 'DB error: ' + error.message});
+    }
   }
+  res.status(400);
+  return res.json({
+    message: 'Request should have username, password and email properties.',
+  });
 };
 
 // Edit user by ID
