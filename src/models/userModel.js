@@ -53,7 +53,7 @@ const deleteUserDB = async (id) => {
 const selectUserByNameAndPassword = async (username, password) => {
   try {
     const [rows] = await promisePool.query(
-      'SELECT user_id, username, email, created_at, user_level FROM Users WHERE username=? AND password=?',
+      'SELECT user_id, username, email, created_at, user_level FROM Users WHERE username = ? AND password = ?',
       [username, password],
     );
     console.log(rows);

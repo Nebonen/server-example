@@ -24,7 +24,6 @@ const getUserById = async (req, res) => {
   try {
     const user = await getUserByIdDB(req.params.id);
     console.log('User found:', user);
-    // jos user löytyi, eli arvo ei ole undefined, lähetetään se vastauksena
     if (user) {
       res.json(user);
     } else {
@@ -35,18 +34,12 @@ const getUserById = async (req, res) => {
   }
 };
 
-// käyttäjän lisäys (rekisteröinti)
-// lisätään parempi virheenkäsittely myöhemmin
 const addUser = async (req, res) => {
   console.log('addUser request body', req.body);
-  // esitellään 3 uutta muuttujaa, johon sijoitetaan req.body:n vastaavien propertyjen arvot
   const {username, password, email} = req.body;
-  // tarkistetaan, että pyynnössä on kaikki tarvittavat tiedot
   if (username && password && email) {
-    // luodaan selväkielisestä sanasta tiiviste, joka tallennetaan kantaan
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
-    // luodaan uusi käyttäjä olio ja lisätään se tietokantaa käyttäen modelia
     const newUser = {
       username,
       password: hashedPassword,
@@ -67,7 +60,6 @@ const addUser = async (req, res) => {
   });
 };
 
-// Edit user by ID
 const editUser = async (req, res) => {
   try {
     const {username, password, email} = req.body;
@@ -93,7 +85,6 @@ const editUser = async (req, res) => {
   }
 };
 
-// Update deleteUser function
 const deleteUser = async (req, res) => {
   try {
     const deleted = await deleteUserDB(req.params.id);
