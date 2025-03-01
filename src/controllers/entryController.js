@@ -34,13 +34,16 @@ const deleteEntry = async (req, res) => {
   }
 };
 
-const postEntry = async (req, res) => {
+const postEntry = async (req, res, next) => {
   // user_id, entry_date, mood, weight, sleep_hours, notes
-  // TODO: add try-catch
   const newEntry = req.body;
   newEntry.user_id = req.user.user_id;
-  insertEntry(newEntry);
-  res.status(201).json({message: 'Entry added.'});
+  try {
+    await insertEntry(newEntry);
+    res.status(201).json({message: 'Entry added'});
+  } catch (error) {
+    next(error);
+  }
 };
 
 /**
@@ -48,9 +51,13 @@ const postEntry = async (req, res) => {
  * @param {*} req
  * @param {*} res
  */
-const getEntries = async (req, res) => {
-  const entries = await selectEntriesByUserId(req.user.user_id);
-  res.json(entries);
+const getEntries = async (req, res, next) => {
+  try {
+    const entries = await selectEntriesByUserId(req.user.user_id);
+    res.json(entries);
+  } catch (error) {
+    next(error);
+  }
 };
 
 export {getEntryById, putEntry, deleteEntry, postEntry, getEntries};

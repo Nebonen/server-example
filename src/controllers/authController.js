@@ -2,11 +2,13 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import 'dotenv/config';
 import {selectUserByUsername} from '../models/userModel.js';
+import {customError} from '../middlewares/errorHandler.js';
 
-const login = async (req, res) => {
+const login = async (req, res, next) => {
   const {username, password} = req.body;
   if (!username) {
-    return res.status(401).json({message: 'Username missing.'});
+    return next(customError('Username missing.', 400));
+    //return res.status(401).json({message: 'Username missing.'});
   }
   const user = await selectUserByUsername(username);
   console.log('eka logi');
@@ -21,7 +23,8 @@ const login = async (req, res) => {
       return res.json({message: 'login ok', user, token});
     }
   }
-  res.status(401).json({message: 'Bad username/password.'});
+  //res.status(401).json({message: 'Bad username/password.'});
+  next(customError('Bad username/password.', 401));
 };
 
 const getMe = (req, res) => {

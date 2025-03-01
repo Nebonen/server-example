@@ -9,6 +9,7 @@ import {
 } from '../controllers/userController.js';
 import {authenticateToken} from '../middlewares/authentication.js';
 import {authorizeUser} from '../middlewares/authorization.js';
+import {validationErrorHandler} from '../middlewares/errorHandler.js';
 
 const userRouter = express.Router();
 
@@ -20,6 +21,7 @@ userRouter
     body('username').trim().isLength({min: 3}).isAlphanumeric(),
     body('password').trim().isLength({min: 8}),
     body('email').trim().isEmail(),
+    validationErrorHandler,
     addUser,
   );
 

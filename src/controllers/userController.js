@@ -7,6 +7,7 @@ import {
   updateUserDB,
   deleteUserDB,
 } from '../models/userModel.js';
+import {customError} from '../middlewares/errorHandler.js';
 
 // Get all users
 const getUsers = async (req, res) => {
@@ -19,7 +20,7 @@ const getUsers = async (req, res) => {
 };
 
 // Get user by ID
-const getUserById = async (req, res) => {
+const getUserById = async (req, res, next) => {
   console.log('getUserById', req.params.id);
 
   try {
@@ -31,41 +32,31 @@ const getUserById = async (req, res) => {
       res.status(404).json({message: 'User not found'});
     }
   } catch (error) {
-    res.status(500).json({message: error.message});
+    //res.status(500).json({message: error.message});
+    next(error);
   }
 };
 
-const addUser = async (req, res) => {
+const addUser = async (req, res, next) => {
   console.log('addUser request body', req.body);
-  const errors = validationResult(req);
-  console.log('validation results: ', errors);
-  if (!errors.isEmpty()) {
-    return res
-      .status(422)
-      .json({message: 'Validation errors!', errors: errors.errors});
-  }
+  // esitellään 3 uutta muuttujaa, johon sijoitetaan req.body:n vastaavien propertyjen arvot
   const {username, password, email} = req.body;
-  if (username && password && email) {
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-    const newUser = {
-      username,
-      password: hashedPassword,
-      email,
-    };
-    try {
-      const result = await addUserDB(newUser);
-      res.status(201);
-      return res.json({message: 'User added. id: ' + result});
-    } catch (error) {
-      console.error(error.message);
-      return res.status(400).json({message: 'DB error: ' + error.message});
-    }
+  // luodaan selväkielisestä sanasta tiiviste, joka tallennetaan kantaan
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(password, salt);
+  // luodaan uusi käyttäjä olio ja lisätään se tietokantaa käyttäen modelia
+  const newUser = {
+    username,
+    password: hashedPassword,
+    email,
+  };
+  try {
+    const result = await addUserDB(newUser);
+    res.status(201);
+    return res.json({message: 'User added. id: ' + result});
+  } catch (error) {
+    return next(customError(error.message, 400));
   }
-  res.status(400);
-  return res.json({
-    message: 'Request should have username, password and email properties.',
-  });
 };
 
 const editUser = async (req, res) => {
