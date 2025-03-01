@@ -1,4 +1,5 @@
 import bcrypt from 'bcryptjs';
+import {validationResult} from 'express-validator';
 import {
   getAllUsers,
   getUserByIdDB,
@@ -36,6 +37,13 @@ const getUserById = async (req, res) => {
 
 const addUser = async (req, res) => {
   console.log('addUser request body', req.body);
+  const errors = validationResult(req);
+  console.log('validation results: ', errors);
+  if (!errors.isEmpty()) {
+    return res
+      .status(422)
+      .json({message: 'Validation errors!', errors: errors.errors});
+  }
   const {username, password, email} = req.body;
   if (username && password && email) {
     const salt = await bcrypt.genSalt(10);

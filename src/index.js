@@ -1,12 +1,5 @@
 import express from 'express';
 import cors from 'cors';
-import {
-  addItem,
-  getItemById,
-  getItems,
-  updateItem,
-  deleteItem,
-} from './items.js';
 import userRouter from './routes/userRouter.js';
 import entryRouter from './routes/entryRouter.js';
 import authRouter from './routes/authRouter.js';
@@ -35,13 +28,6 @@ app.use('/api/users', userRouter);
 app.use('/api/auth', authRouter);
 // entry resurssin päätepisteet (endpoint)
 app.use('/api/entries', entryRouter);
-
-// Items (testi mock data) resurssin päätepisteet (endpoint)
-app.get('/api/items', getItems);
-app.get('/api/items/:id', getItemById);
-app.post('/api/items', addItem);
-app.put('/api/items/:id', updateItem);
-app.delete('/api/items/:id', deleteItem);
 
 app.listen(port, hostname, () => {
   console.log(`Server running at http://${hostname}:${port}/`);
